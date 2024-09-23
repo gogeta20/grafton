@@ -5,7 +5,7 @@
 #!/database/data/.gitkeep
 #!/logs/nginx/.gitkeep
 ### Fin Docker###
-.env*
+#.env*
 **/.idea/**
 **/var/**
 **/vendor/**
