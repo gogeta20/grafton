@@ -32,11 +32,11 @@ const login = async () => {
       <h1>Login</h1>
       <form @submit.prevent="login">
         <div class="input-group">
-          <label for="username">Usuario:</label>
+          <label for="username">Usuario: develop@example.com</label>
           <input type="text" id="username" v-model="username" required />
         </div>
         <div class="input-group">
-          <label for="password">Contraseña:</label>
+          <label for="password">Contraseña: default_password</label>
           <input type="password" id="password" v-model="password" required />
         </div>
         <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
