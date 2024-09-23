@@ -71,6 +71,11 @@ xdebug: ## 🆘⛑ Actualizamos la ip de escucha de xdebug. ip={}
 	docker exec backend_g sh -c "sed -i 's|xdebug.client_host =.*|xdebug.client_host =$(ip)|g' /var/www/shared/docker-php-ext-xdebug.ini && \
 	cp /var/www/shared/docker-php-ext-xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini"
 
+.PHONY: jwt-generate-keypair
+jwt: ## Genera las claves privadas y públicas necesarias para Lexik JWT
+	@docker exec -it backend_g php bin/console lexik:jwt:generate-keypair
+
+
 #========================================
 frontend:
 	docker exec -it frontend_g sh

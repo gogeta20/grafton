@@ -64,11 +64,19 @@ Ejecuta las migraciones para la base de datos:
 ```bash
 make back-migrate
 ```
+
 Crea el primer usuario de Symfony (opcional):
 
 ```bash
 make symfony-create-user
 ```
+
+Crea la llaves para los token jwt:
+
+```bash
+make jwt
+```
+
 Opciones adicionales
 En caso de tener problemas con permisos en el backend o frontend, puedes ejecutar el siguiente comando para cambiar los permisos:
 
