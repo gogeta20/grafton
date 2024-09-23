@@ -19,8 +19,8 @@ try {
     $password = 'default_password'; // Aquí defines la contraseña en texto plano
     $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Genera el hash de la contraseña
 
-    $sql = "INSERT INTO user (uuid, email, roles, password)
-            VALUES (UUID(), 'develop@example.com', '[\"ROLE_DEVELOPER\"]', :password)
+    $sql = "INSERT INTO user (uuid, name ,email, roles, password)
+            VALUES (UUID(), 'develop@example.com','develop', '[\"ROLE_DEVELOPER\"]', :password)
             ON DUPLICATE KEY UPDATE email = 'develop@example.com'";
 
     $stmt = $pdo->prepare($sql);
