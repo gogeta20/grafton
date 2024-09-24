@@ -5,8 +5,10 @@ interface Article {
   id: number;
   title: string;
   body: string;
-  price: number;
   mediaUrl: string;
+  files: string;
+  isFavorite: number;
+  email: string;
 }
 
 const props = defineProps({
@@ -33,21 +35,31 @@ const saveArticle = () => {
 </script>
 
 <template>
-  <div>
-    <div>
-      <label for="title">Título:</label>
-      <input id="title" v-model="props.article.title" class="form-control" />
+
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content product-card">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createArticleModalLabel">Crear Artículo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <label for="title">Título:</label>
+            <input id="title" v-model="props.article.title" class="form-control" />
+          </div>
+          <div class="mt-3">
+            <label for="description">Descripción:</label>
+            <textarea id="description" v-model="props.article.body" class="form-control"></textarea>
+          </div>
+          <div class="mt-3">
+            <label for="file">Subir Imagen:</label>
+            <input type="file" id="file" @change="handleFileChange" class="form-control" />
+          </div>
+          <button @click="saveArticle" class="btn btn-primary mt-3">Guardar</button>
+        </div>
+      </div>
     </div>
-    <div class="mt-3">
-      <label for="description">Descripción:</label>
-      <textarea id="description" v-model="props.article.body" class="form-control"></textarea>
-    </div>
-    <div class="mt-3">
-      <label for="file">Subir Imagen:</label>
-      <input type="file" id="file" @change="handleFileChange" class="form-control" />
-    </div>
-    <button @click="saveArticle" class="btn btn-primary mt-3">Guardar</button>
-  </div>
+
 </template>
 
 <style scoped>

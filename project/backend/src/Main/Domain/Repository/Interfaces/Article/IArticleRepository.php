@@ -22,4 +22,6 @@ interface IArticleRepository
     public function findById(string $id): ?Article;
     public function findAllByUserId(string $userId): array;
     public function findByUserIdAndArticleId(string $userId, string $articleId): ?Article;
+    public function findAllByUserAndFavorites(string $userId): array;
+    public function findAllAndFavorites(string $userId): array;
 }

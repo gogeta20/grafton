@@ -4,6 +4,7 @@ import { useToastStore } from "@/core/stores/toast";
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
 import { userStore } from "@/core/stores/userStore";
+
 const headers = {
   Accept: "application/json",
   "Content-Type": "application/json; charset=utf-8",
@@ -122,6 +123,7 @@ class Api {
   }
 
   private static handleError(error: any): Promise<never> {
+    const usuarioStore = userStore();
     const { status, data } = error || {};
     const toastStore = useToastStore();
     let messageErrorData = "Error Interno";
@@ -149,6 +151,7 @@ class Api {
         });
         break;
       case StatusCode.Unauthorized:
+        usuarioStore.data.isAuthenticated = false;
         toastStore.onShowToast({
           title: "Error",
           message: "Sesión Caducada",

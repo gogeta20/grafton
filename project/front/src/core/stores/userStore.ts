@@ -17,7 +17,6 @@ export const userStore = defineStore("userStore", {
   },
   actions: {
     async check() {
-
     },
     async authResolve(p: string) {
     },

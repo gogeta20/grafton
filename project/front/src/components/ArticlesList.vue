@@ -5,62 +5,79 @@ import ArticleEditForm from './ArticleEditForm.vue';
 import UserForm from './UserForm.vue';
 import { userStore } from "@/core/stores/userStore";
 import { Modal } from 'bootstrap';
-// Definimos el componente Article para tipos
+import { allArticles } from '@/Article/Infrastructure/useCase/GetAllArticles';
+import { useMyArticles } from '@/Article/Application/MyArticles';
+import { useMyFavorites } from '@/Article/Application/MyFavorites';
+import { useDeleteArticle } from '@/Article/Application/DeleteArticle';
+import { useCreateArticle } from '@/Article/Application/CreateArticle';
+import { useUpdatedArticle } from '@/Article/Application/UpdatedArticle';
+import { useToggleFavorite } from '@/Article/Application/ToggleFavorite';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 interface Article {
   id: string;
   title: string;
   body: string;
   mediaUrl: string;
   files: string;
-  isFavorite: boolean;
-  email: string;
+  isFavorite: number;
+  email: string | null;
 }
 const usuarioStore = userStore();
 const articles = ref<Article[]>([]);
 const isLoading = ref(false);
-const selectedArticle = ref<Article | null>(null);
-const newArticle = ref<Article | null>(null);
-let selectedFile = ref<File | null>(null); // Archivo seleccionado
-let showingFavorites = ref(false); // Estado para el toggle de favoritos
+
+let selectedFile = ref<File | null>(null);
 let modal: Modal | null = null;
 let newUser = ref(false);
-
+const titleSection = ref('Mis Articulos')
+const newArticle = ref({
+  id: '',
+  title: '',
+  body: '',
+  mediaUrl: '',
+  files: '',
+  isFavorite: false
+});
+const selectedArticle = ref({
+  id: '',
+  title: '',
+  body: '',
+  mediaUrl: '',
+  files: '',
+  isFavorite: false
+});
 const fetchArticles = async () => {
   isLoading.value = true;
-  try {
-    const response = await api.get('/api/content');
-    articles.value = response.data.data;
-  } catch (error) {
-    console.error(error);
-  } finally {
-    isLoading.value = false;
-  }
+  articles.value = await useMyArticles().refetch();
+  isLoading.value = false;
 };
 
 const fetchFavorites = async () => {
   isLoading.value = true;
-  try {
-    const response = await api.get('/api/favorites');
-    const favorites = response.data.data.map((item: any) => {
-      const article = item.article;
-      article.isFavorite = true; // Marcar como favorito
-      return article;
-    });
-    articles.value = favorites;
-  } catch (error) {
-    console.error(error);
-  } finally {
-    isLoading.value = false;
-  }
+  articles.value = await useMyFavorites().refetch();
+  isLoading.value = false;
+};
+
+const allArticlesResolve = async () => {
+  isLoading.value = true;
+  articles.value = await allArticles();
+  isLoading.value = false;
 };
 
 const toggleFavorites = async () => {
-  showingFavorites.value = !showingFavorites.value;
-  if (showingFavorites.value) {
-    await fetchFavorites(); // Mostrar solo favoritos
-  } else {
-    await fetchArticles(); // Volver a mostrar todos los artículos
-  }
+  titleSection.value = 'Favoritos';
+  await fetchFavorites();
+};
+
+const toggleAll = async () => {
+  titleSection.value = 'Todos';
+  await allArticlesResolve();
+};
+
+const toggleMy = async () => {
+  titleSection.value = 'Mis Articulos';
+  await fetchArticles();
 };
 
 const openEditModal = (article: Article) => {
@@ -93,87 +110,41 @@ const openCreateUserModal = () => {
   modal.show();
 };
 
-const allArticles = async () => {
+const salir = () => {
+  usuarioStore.data.isAuthenticated = false;
+  router.push('/');
 
-  const response = await api.get(`/api/content/all`);
-  const all = response.data.data.map((item: any) => {
-    const article = item;
-    return article;
-  });
-  articles.value = all;
 };
 
 const updateArticle = async (updatedArticle: Article) => {
   isLoading.value = true;
-  try {
-    const formData = new FormData();
-    formData.append('id', updatedArticle.id);
-    formData.append('title', updatedArticle.title);
-    formData.append('body', updatedArticle.body);
-
-    if (selectedFile.value) {
-      formData.append('files', selectedFile.value); // Adjuntar el archivo
-    }
-
-    await api.post(`/api/content/${updatedArticle.id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    await fetchArticles(); // Refrescar artículos después de actualizar
-    modal.hide();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    isLoading.value = false;
-  }
+  await useUpdatedArticle().refetch(updatedArticle, selectedFile.value);
+  await fetchArticles();
+  modal.hide();
+  isLoading.value = false;
 };
 
 const createArticle = async (createdArticle: Article) => {
   isLoading.value = true;
-  try {
-    const formData = new FormData();
-    formData.append('title', createdArticle.title);
-    formData.append('body', createdArticle.body);
-
-    if (selectedFile.value) {
-      formData.append('files', selectedFile.value); // Adjuntar el archivo
-    }
-
-    await api.post(`/api/content`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    await fetchArticles(); // Refrescar artículos después de crear
-    modal.hide();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    isLoading.value = false;
-  }
+  await useCreateArticle().refetch(createdArticle, selectedFile.value);
+  await fetchArticles();
+  modal.hide();
+  isLoading.value = false;
 };
 
 const deleteArticle = async (articleId: string) => {
   if (confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
     isLoading.value = true;
-    try {
-      await api.delete(`/api/content/${articleId}`);
-      await fetchArticles(); // Refrescar artículos después de eliminar
-    } catch (error) {
-      console.error(error);
-    } finally {
-      isLoading.value = false;
-    }
+    await useDeleteArticle().refetch(articleId);
+    await fetchArticles();
+    isLoading.value = false;
   }
 };
 
 const toggleFavorite = async (article: Article) => {
   try {
-    await api.post(`/api/content/${article.id}/favorite`);
-    article.isFavorite = !article.isFavorite; // Alternar el estado de favorito
+    await useToggleFavorite().refetch(article.id);
+    article.isFavorite = !article.isFavorite;
   } catch (error) {
     console.error(error);
   }
@@ -189,20 +160,25 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="container mt-5">
+  <div class="container container-height">
     <h1>Lista de Artículos</h1>
-    <div class="mb-3 text-right">
-      <button @click="openCreateModal" class="btn btn-success">Crear Artículo</button>
-      <button @click="openEditUserModal" class="btn btn-success">Editar Usuario</button>
-      <button @click="toggleFavorites" class="btn btn-secondary">
-        {{ showingFavorites ? 'Ver Todos los Artículos' : 'Ver Favoritos' }}
-      </button>
-      <button @click="openCreateUserModal" class="btn btn-primary">Crear Nuevo Usuario</button>
-      <button @click="allArticles" class="btn btn-primary">Ver Todos los articulos</button>
+    <h4>{{ titleSection }}</h4>
+    <div class="d-flex justify-content-between">
+      <div class="mb-3 d-flex justify-content-center gap-2">
+        <button @click="openCreateModal" class="btn btn-primary btn-sm">Crear Artículo</button>
+        <button @click="toggleMy" class="btn btn-primary btn-sm">Mis Artículos</button>
+        <button @click="toggleFavorites" class="btn btn-primary btn-sm">Favoritos</button>
+        <button @click="toggleAll" class="btn btn-primary btn-sm">Todos</button>
+      </div>
+
+      <div class="mb-3 d-flex justify-content-center gap-2">
+        <button @click="openEditUserModal" class="btn btn-primary btn-sm ">Editar Usuario</button>
+        <button @click="openCreateUserModal" class="btn btn-primary btn-sm">Crear Nuevo Usuario</button>
+        <button @click="salir" class="btn btn-danger btn-sm">Salir</button>
+      </div>
     </div>
 
     <div v-if="isLoading" class="loader">Cargando...</div>
-
     <div v-else class="row">
       <div v-for="article in articles" :key="article.id" class="col-md-4 mb-4">
         <div class="card h-100 product-card">
@@ -212,13 +188,16 @@ onBeforeMount(() => {
           <div class="card-body">
             <h5 class="card-title" :title="article.title">{{ article.title }}</h5>
             <p class="card-text description" :title="article.body">{{ article.body }}</p>
+            <p class="card-text" :title="article.title">Autor: {{ article.email }}</p>
             <div v-if="usuarioStore.data.email === article.email" class="d-flex justify-content-between">
-              <button @click="openEditModal(article)" class="btn btn-primary">Editar</button>
-              <button @click="deleteArticle(article.id)" class="btn btn-danger">Eliminar</button>
-
+              <div class="d-flex gap-2">
+                <button @click="openEditModal(article)" class="btn btn-primary">Editar</button>
+                <button @click="deleteArticle(article.id)" class="btn btn-danger">Eliminar</button>
+              </div>
               <button @click="toggleFavorite(article)"
-                :class="['btn', article.isFavorite ? 'btn-secondary' : 'btn-outline-secondary']">
-                {{ article.isFavorite ? 'Favorito' : 'Marcar como Favorito' }}
+                :class="['btn', article.isFavorite ? 'btn-success' : 'btn-outline-secondary']">
+                <i v-if="article.isFavorite" class="bi bi-balloon-heart"></i>
+                <i v-else="article.isFavorite" class="bi bi-balloon-heart"></i>
               </button>
             </div>
           </div>
@@ -226,68 +205,29 @@ onBeforeMount(() => {
       </div>
     </div>
 
-    <!-- edit -->
+    <!-- edit article-->
     <div class="modal fade" id="editArticleModal" tabindex="-1" aria-labelledby="editArticleModalLabel"
       aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editArticleModalLabel">Editar Artículo</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <ArticleEditForm v-if="selectedArticle" :article="selectedArticle" @updateArticle="updateArticle"
-              @fileSelected="handleFileSelected" />
-          </div>
-        </div>
-      </div>
+      <ArticleEditForm v-if="selectedArticle" :article="selectedArticle" @updateArticle="updateArticle"
+        @fileSelected="handleFileSelected" />
     </div>
 
-    <!-- crear -->
+    <!-- crear article-->
     <div class="modal fade" id="createArticleModal" tabindex="-1" aria-labelledby="createArticleModalLabel"
       aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="createArticleModalLabel">Crear Artículo</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <ArticleEditForm v-if="newArticle" :article="newArticle" @updateArticle="createArticle"
-              @fileSelected="handleFileSelected" />
-          </div>
-        </div>
-      </div>
+      <ArticleEditForm v-if="newArticle" :article="newArticle" @updateArticle="createArticle"
+        @fileSelected="handleFileSelected" />
     </div>
 
     <!-- user -->
     <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <UserForm />
-          </div>
-        </div>
-      </div>
+      <UserForm />
     </div>
 
     <!-- create user -->
     <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel"
       aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="createUserModalLabel">Crear Nuevo Usuario</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <UserForm :new-user="newUser" />
-          </div>
-        </div>
-      </div>
+      <UserForm :new-user="newUser" />
     </div>
 
   </div>
@@ -296,6 +236,10 @@ onBeforeMount(() => {
 <style scoped>
 .container {
   margin-top: 2rem;
+}
+
+.container-height {
+  height: 90vh;
 }
 
 .product-card {
@@ -312,14 +256,14 @@ onBeforeMount(() => {
 
 .image-container {
   background-color: #fff;
-  padding: 10px;
+  /* padding: 10px; */
   border-bottom: 1px solid #44475a;
 }
 
 .card-img-top {
   width: 100%;
   height: 200px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 .card-title,

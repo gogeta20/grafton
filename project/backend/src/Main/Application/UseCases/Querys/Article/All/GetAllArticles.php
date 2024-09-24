@@ -20,13 +20,11 @@ final readonly class GetAllArticles
     public function __invoke(GetAllArticlesQuery $query): array
     {
         try {
+            $user = $this->repository->findByEmail($query->userId());
             if ($query->all()){
-                $articles = $this->articleRepository->findAll();
-                return array_map(fn($article) => $article->toArray(), $articles);
+                return  $this->articleRepository->findAllAndFavorites($user->getId());
             }else{
-                $user = $this->repository->findByEmail($query->userId());
-                $articles = $this->articleRepository->findAllByUserId($user->getId());
-                return array_map(fn($article) => $article->toArray(), $articles);
+                return $this->articleRepository->findAllByUserAndFavorites($user->getId());
             }
         } catch (\Exception $e) {
             throw new StoreException('Error fetching articles from repository: ' . $e->getMessage());

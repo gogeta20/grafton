@@ -26,6 +26,13 @@ const user = ref<User>({
   password: '',
 });
 
+const newU = ref<User>({
+  id: '',
+  name: '',
+  email: '',
+  password: '',
+});
+
 const password = ref('');
 const isLoading = ref(false);
 let modal: Modal | null = null;
@@ -50,11 +57,6 @@ const fetchUserData = async () => {
   } finally {
     isLoading.value = false;
   }
-};
-
-const openEditModal = () => {
-  modal = new Modal(document.getElementById('editUserModal') as HTMLElement);
-  modal.show();
 };
 
 const updateUser = async () => {
@@ -84,7 +86,7 @@ const createUser = async () => {
   isLoading.value = true;
   try {
     const payload = {
-      email: user.value.email,
+      email: newU.value.email,
       password: password.value || 'default_password',
     };
 
@@ -112,37 +114,53 @@ const handleSave = () => {
 </script>
 
 <template>
-  <div class="container mt-2">
-    <h3>{{ newUser ? 'Crear Nuevo Usuario' : 'Perfil de Usuario' }}</h3>
 
-    <div v-if="isLoading" class="loader">Cargando...</div>
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content product-card">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createArticleModalLabel">{{ newUser ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container mt-2 mb-3">
+          <div v-if="isLoading" class="loader">Cargando...</div>
 
-    <div v-else>
-      <div class="card h-100">
-        <div class="card-body">
-          <h5 class="card-title">{{ user?.name || 'Nuevo Usuario' }}</h5>
-          <div class="mb-3">
-            <label for="userName" class="form-label">Nombre</label>
-            <input v-model="user.name" type="text" class="form-control" id="userName" required />
+          <div v-else>
+            <h5 class="card-title mb-4">{{ newUser ? 'Nuevo Usuario' : user?.name }}</h5>
+            <div class="mb-3">
+              <label for="userName" class="form-label">Nombre</label>
+              <input v-if="newUser" v-model="newU.name" type="text" class="form-control" id="userName" required />
+              <input v-else v-model="user.name" type="text" class="form-control" id="userName" required />
+            </div>
+            <div class="mb-3">
+              <label for="userEmail" class="form-label">Email</label>
+              <input v-if="newUser" v-model="newU.email" type="email" class="form-control" id="userEmail" required />
+              <input v-else v-model="user.email" type="email" class="form-control" id="userEmail" required />
+            </div>
+            <div class="mb-3">
+              <label for="userPass" class="form-label">Contraseña</label>
+              <input v-model="password" type="password" class="form-control" id="userPass" />
+            </div>
+            <button type="button" class="btn btn-primary" @click="handleSave">
+              {{ newUser ? 'Crear Usuario' : 'Guardar Cambios' }}
+            </button>
           </div>
-          <div class="mb-3">
-            <label for="userEmail" class="form-label">Email</label>
-            <input v-model="user.email" type="email" class="form-control" id="userEmail" required />
-          </div>
-          <div class="mb-3">
-            <label for="userPass" class="form-label">Contraseña</label>
-            <input v-model="password" type="password" class="form-control" id="userPass" />
-          </div>
-          <button type="button" class="btn btn-primary" @click="handleSave">
-            {{ newUser ? 'Crear Usuario' : 'Guardar Cambios' }}
-          </button>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <style scoped>
+.form-control {
+  background-color: #44475a;
+  color: #f8f8f2;
+  border: 1px solid #6272a4;
+  border-radius: 4px;
+}
+
 .container {
   margin-top: 2rem;
 }

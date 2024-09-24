@@ -80,4 +80,51 @@ class ArticleRepository implements IArticleRepository
             'id' => $articleId
         ]);
     }
+
+    /**
+     * Devuelve todos los artículos creados por el usuario o marcados como favoritos por el usuario.
+     *
+     * @param string $userId
+     * @return Article[]
+     */
+    public function findAllByUserAndFavorites(string $userId): array
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a.id, a.title, a.body, a.id, a.mediaUrl, u.id as author, u.email,
+                CASE
+                    WHEN f.user IS NOT NULL THEN true
+                    ELSE false
+                END AS isFavorite
+        FROM App\Main\Domain\Model\Article a
+        LEFT JOIN App\Main\Domain\Model\User u WITH a.author = u.id
+        LEFT JOIN App\Main\Domain\Model\Favorite f WITH a.id = f.article AND f.user = :userId
+        WHERE a.author = :userId OR f.user = :userId'
+        );
+        $query->setParameter('userId', $userId);
+
+        return $query->getResult();
+    }
+
+    /**
+     * Devuelve todos los artículos creados por el usuario o marcados como favoritos por el usuario.
+     *
+     * @param string $userId
+     * @return Article[]
+     */
+    public function findAllAndFavorites(string $userId): array
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT a.id, a.title, a.body, a.mediaUrl, u.id as author, u.email,
+            CASE
+                WHEN f.user IS NOT NULL THEN true
+                ELSE false
+            END AS isFavorite
+        FROM App\Main\Domain\Model\Article a
+        LEFT JOIN App\Main\Domain\Model\User u WITH a.author = u.id
+        LEFT JOIN App\Main\Domain\Model\Favorite f WITH f.article = a.id AND f.user = :userId'
+        );
+        $query->setParameter('userId', $userId);
+
+        return $query->getResult();
+    }
 }

@@ -1,0 +1,106 @@
+{
+    "status": "success",
+    "data": [
+        {
+            "id": "01db530f-dd03-44b1-b8ff-83e05b47bad3",
+            "title": "perro dev",
+            "body": "perro dev",
+            "mediaUrl": "uploads/e79440e2-de13-4777-bdde-6e6ccd53347e.jpg",
+            "author": "5925a74a-c4a6-4706-a91e-03f7def4aec1",
+            "email": "dev@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "0cc161f3-92a8-455c-9031-4a799f93dcb0",
+            "title": "perro 1",
+            "body": "perro 1",
+            "mediaUrl": "uploads/d6fd1b5c-6b04-461a-affb-25483cdf8672.jpg",
+            "author": "5925a74a-c4a6-4706-a91e-03f7def4aec1",
+            "email": "dev@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "0e3e3fbb-1dbe-4e92-9db9-2f71a7f0d575",
+            "title": "perro",
+            "body": "perro ",
+            "mediaUrl": "uploads/097c2651-c94e-45d3-bda2-47ca6eadf3db.jpg",
+            "author": "2b85da0d-fe47-46c4-a03a-7361db3e0426",
+            "email": "develop@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "16e5bde3-7efd-4962-bb20-5dd24c5ae76c",
+            "title": "articulo",
+            "body": "body",
+            "mediaUrl": "uploads/de1803f4-1624-488f-ba90-1774013d16fe.png",
+            "author": "2b85da0d-fe47-46c4-a03a-7361db3e0426",
+            "email": "develop@example.com",
+            "isFavorite": 1
+        },
+        {
+            "id": "1baf658d-9232-447e-9209-eca5a09e6bb1",
+            "title": "perro 2",
+            "body": "perro 2",
+            "mediaUrl": "uploads/00b4b44f-026c-492e-b7e4-cf922e103932.jpg",
+            "author": "2b85da0d-fe47-46c4-a03a-7361db3e0426",
+            "email": "develop@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "3b08d99c-6b0c-44a9-a6ca-d19ad5bf3ff0",
+            "title": "cccccssss",
+            "body": "ccccc",
+            "mediaUrl": "uploads/6d00e708-d40b-4a71-80e6-1d1ebd1221bb.jpg",
+            "author": "70a78a8f-79bb-11ef-ba0f-0242ac170003",
+            "email": "devsss@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "74c4cc3b-c543-44e5-9303-4dde6733f1cf",
+            "title": "bbbbb",
+            "body": "bbbbbb",
+            "mediaUrl": "uploads/af1ad343-56c0-4618-a39c-0be0708d3480.png",
+            "author": "aaef5340-79bd-11ef-bf09-0242ac170002",
+            "email": "dev100@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "79de0041-870e-405f-b712-f9617caf02ab",
+            "title": "gato edit",
+            "body": "body edit",
+            "mediaUrl": "uploads/bee26502-ec22-45e4-8d17-d3a35898f471.png",
+            "author": null,
+            "email": null,
+            "isFavorite": 0
+        },
+        {
+            "id": "9d887806-b5a9-4224-82f9-ecd117999e3f",
+            "title": "gato 2",
+            "body": "gato 2",
+            "mediaUrl": "uploads/967fc165-a994-476c-9f95-605b2491baa8.png",
+            "author": "2b85da0d-fe47-46c4-a03a-7361db3e0426",
+            "email": "develop@example.com",
+            "isFavorite": 0
+        },
+        {
+            "id": "c8c69a30-5b05-4dc5-8c66-6bac103ee520",
+            "title": "perro ",
+            "body": "perro",
+            "mediaUrl": "uploads/d9d85079-d1b8-4d9f-8d02-fa2ade516eaf.jpg",
+            "author": null,
+            "email": null,
+            "isFavorite": 0
+        },
+        {
+            "id": "de0392be-adcb-4f2c-9b56-92e8f7019cee",
+            "title": "gato2 usuario2",
+            "body": "gato2",
+            "mediaUrl": "uploads/6ab4213d-3e25-401b-bcf3-b41f0bde035b.png",
+            "author": "9a4890b5-f974-489a-b06b-91bb051513a6",
+            "email": "mau1@example.com",
+            "isFavorite": 0
+        }
+    ],
+    "errors": null,
+    "message": "La consulta fue realizada correctamente."
+}

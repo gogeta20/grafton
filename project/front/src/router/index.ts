@@ -24,19 +24,14 @@ router.beforeEach(async (to, _, next) => {
   const usuarioStore = userStore();
 
   const errorPages = ["/403", "/404", "/500"];
-  const publicPages: string[] = ["/logout"];
+  const publicPages: string[] = ["/logout", "/"];
   const isError = errorPages.includes(to.path);
   const isPublic = publicPages.includes(to.path);
-
-  await usuarioStore.check(to.path);
-
   const isLogged = usuarioStore.data.isAuthenticated;
-  // await usuarioStore.savePath(to.path);
   if (!isLogged && !isPublic && !isError) {
-    await usuarioStore.authResolve(to.path);
-    next();
+    next({ name: 'login' });
   } else if (isLogged && isPublic) {
-    next({ path: "/inicio" });
+    next({ path: "/articles" });
   } else {
     next();
   }
