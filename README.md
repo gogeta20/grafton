@@ -59,13 +59,19 @@ Levanta los contenedores:
 ```bash
 make up
 ```
+Ejecuta las diff de  migraciones para la base de datos:
+
+```bash
+make back-migrate-diff
+```
+
 Ejecuta las migraciones para la base de datos:
 
 ```bash
 make back-migrate
 ```
 
-Crea el primer usuario de Symfony (opcional):
+Crea el primer usuario de Symfony:
 
 ```bash
 make symfony-create-user

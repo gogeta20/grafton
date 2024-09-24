@@ -62,6 +62,9 @@ back-permission-777: #
 symfony-create-user:
 	@docker exec -it backend_g php /var/www/html/scripts/execute_sql.php
 
+back-migrate-diff:
+	docker exec -it backend_g php bin/console doctrine:migrations:diff --no-interaction
+
 back-migrate:
 	docker exec -it backend_g php bin/console doctrine:migrations:migrate --no-interaction
 
